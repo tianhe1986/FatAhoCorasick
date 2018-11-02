@@ -1,0 +1,24 @@
+{
+    "name": "tianhe1986/fatahocorasick",
+    "type": "library",
+    "description": "Aho-Corasick algorithm in php",
+    "keywords": ["aho", "corasick", "php"],
+    "license": "MIT",
+    "homepage": "https://github.com/tianhe1986/FatAhoCorasick",
+    "require": {
+        "php": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "FatAhoCorasick\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "FatAhoCorasick\\Tests\\": "tests/"
+        }
+    }
+}
