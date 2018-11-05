@@ -18,9 +18,6 @@ class FatAhoCorasick
     //failure table
     protected $failure = [];
     
-    // next table
-    protected $next = [];
-    
     public function __construct()
     {
 
@@ -42,7 +39,6 @@ class FatAhoCorasick
         $this->reset();
         $this->computeGoto();
         $this->computeFailure();
-        $this->computeNext();
     }
     
     protected function reset()
@@ -100,11 +96,6 @@ class FatAhoCorasick
         }
     }
     
-    protected function computeNext()
-    {
-        
-    }
-    
     public function search($string)
     {
         $result = [];
@@ -112,12 +103,14 @@ class FatAhoCorasick
         $len = strlen($string);
         
         for ($i = 0; $i < $len; $i++) {
-            while($state !==0 && ! isset($this->goto[$state][$string[$i]])) {
+            while($state !== 0 && ! isset($this->goto[$state][$string[$i]])) {
                 $state = $this->failure[$state] ?? 0;
             }
             $state = $this->goto[$state][$string[$i]] ?? 0;
             if (isset($this->output[$state])) {
-                $result[] = [$i, $this->output[$state]];
+                foreach ($this->output[$state] as $outputString) {
+                    $result[] = [$outputString, $i - strlen($outputString) + 1];
+                }
             }
         }
         
