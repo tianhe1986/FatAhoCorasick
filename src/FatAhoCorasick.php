@@ -90,6 +90,9 @@ class FatAhoCorasick
                 }
                 $this->failure[$toState] = $this->goto[$tempState][$char] ?? 0;
                 if (isset($this->output[$this->failure[$toState]])) {
+                    if ( ! isset($this->output[$toState])) {
+                        $this->output[$toState] = [];
+                    }
                     $this->output[$toState] = array_merge($this->output[$toState], $this->output[$this->failure[$toState]]);
                 }
             }
