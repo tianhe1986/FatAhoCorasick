@@ -3,7 +3,7 @@ A little PHP library implementing the [Aho–Corasick algorithm](https://en.wiki
 The original paper cound be found [here](https://www.uio.no/studier/emner/matnat/ifi/INF3800/v13/undervisningsmateriale/aho_corasick.pdf)
 
 一个纯PHP实现的 [Aho-Corasick算法](https://en.wikipedia.org/wiki/Aho%E2%80%93Corasick_algorithm)  
-算法的原论文可以看[这里](https://www.uio.no/studier/emner/matnat/ifi/INF3800/v13/undervisningsmateriale/aho_corasick.pdf)
+算法的原论文可以看[这里](https://www.uio.no/studier/emner/matnat/ifi/INF3800/v13/undervisningsmateriale/aho_corasick.pdf)  
 百度搜出来的AC算法的中文讲解就那么几篇，转载来转载去的，但我表示看不懂。  
 索性一怒之下看原始的论文，然后根据论文中的算法写了这个PHP实现。  
 改天我也写篇中文讲解，争取比那几篇写得更容易懂一些。
