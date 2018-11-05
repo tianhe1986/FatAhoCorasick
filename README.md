@@ -8,10 +8,10 @@ The original paper cound be found [here](https://www.uio.no/studier/emner/matnat
 索性一怒之下看原始的论文，然后根据论文中的算法写了这个PHP实现。  
 改天我也写篇中文讲解，争取比那几篇写得更容易懂一些。
 
-#Requires
+# Requires
 PHP 7.0 or higher
 
-#Installation
+# Installation
 
 ```
  composer require tianhe1986/fatahocorasick
