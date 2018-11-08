@@ -18,6 +18,9 @@ class FatAhoCorasick
     //failure table
     protected $failure = [];
     
+    //next table
+    protected $next = [];
+    
     public function __construct()
     {
 
@@ -34,11 +37,14 @@ class FatAhoCorasick
         }
     }
     
-    public function compute()
+    public function compute($useNext = true)
     {
         $this->reset();
         $this->computeGoto();
         $this->computeFailure();
+        if ($useNext) {
+            $this->computeNext();
+        }
     }
     
     protected function reset()
@@ -99,7 +105,22 @@ class FatAhoCorasick
         }
     }
     
-    public function search($string)
+    protected function computeNext()
+    {
+        $queue = [0];
+        while ($queue) {
+            $nextState = array_shift($queue);
+            $failureState = $this->failure[$nextState] ?? 0;
+            $this->next[$nextState] = ($this->goto[$nextState] ?? []) + ($this->next[$failureState] ?? []);
+            if ( isset($this->goto[$nextState])) {
+                foreach ($this->goto[$nextState] as $toState) {
+                    $queue[] = $toState;
+                }
+            } 
+        }
+    }
+    
+    public function searchWithoutNext($string)
     {
         $result = [];
         $state = 0;
@@ -110,6 +131,28 @@ class FatAhoCorasick
                 $state = $this->failure[$state] ?? 0;
             }
             $state = $this->goto[$state][$string[$i]] ?? 0;
+            if (isset($this->output[$state])) {
+                foreach ($this->output[$state] as $outputString) {
+                    $result[] = [$outputString, $i - strlen($outputString) + 1];
+                }
+            }
+        }
+        
+        return $result;
+    }
+    
+    public function search($string)
+    {
+        if (empty($this->next)) {
+            return $this->searchWithoutNext($string);
+        }
+        
+        $result = [];
+        $state = 0;
+        $len = strlen($string);
+        
+        for ($i = 0; $i < $len; $i++) {
+            $state = $this->next[$state][$string[$i]] ?? 0;
             if (isset($this->output[$state])) {
                 foreach ($this->output[$state] as $outputString) {
                     $result[] = [$outputString, $i - strlen($outputString) + 1];

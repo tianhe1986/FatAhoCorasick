@@ -7,7 +7,27 @@ use FatAhoCorasick\FatAhoCorasick;
 
 class FatAhoCorasickTest extends TestCase
 {
-    public function testSearch()
+    public function testSearchWithoutNext()
+    {
+        $fatAhoCorasick = new FatAhoCorasick();
+        $fatAhoCorasick->addKeyword(['art', 'cart']);
+        $fatAhoCorasick->addKeyword('ted');
+        $fatAhoCorasick->compute(false);
+        $result = $fatAhoCorasick->search("a carted mart lot one blue ted");
+        $this->assertEquals(5, count($result));
+        $this->assertEquals('cart', $result[0][0]);
+        $this->assertEquals(2, $result[0][1]);
+        $this->assertEquals('art', $result[1][0]);
+        $this->assertEquals(3, $result[1][1]);
+        $this->assertEquals('ted', $result[2][0]);
+        $this->assertEquals(5, $result[2][1]);
+        $this->assertEquals('art', $result[3][0]);
+        $this->assertEquals(10, $result[3][1]);
+        $this->assertEquals('ted', $result[4][0]);
+        $this->assertEquals(27, $result[4][1]);
+    }
+    
+    public function testSearchNext()
     {
         $fatAhoCorasick = new FatAhoCorasick();
         $fatAhoCorasick->addKeyword(['art', 'cart']);
@@ -44,7 +64,8 @@ class FatAhoCorasickTest extends TestCase
         $fatAhoCorasick = new FatAhoCorasick();
         $fatAhoCorasick->addKeyword($keywords);
         $fatAhoCorasick->compute();
-        $foundAhoCorasick = $fatAhoCorasick->search($string);
+        $foundAhoCorasick = $fatAhoCorasick->searchWithoutNext($string);
+        $foundAhoCorasickNext = $fatAhoCorasick->search($string);
         
         $comp = function($a, $b) {
             return ($a[1] === $b[1]) ? ($a[0] > $b[0]) : ($a[1] > $b[1]);
@@ -52,7 +73,9 @@ class FatAhoCorasickTest extends TestCase
         
         usort($foundStrpos, $comp);
         usort($foundAhoCorasick, $comp);
+        usort($foundAhoCorasickNext, $comp);
         
         $this->assertSame($foundStrpos, $foundAhoCorasick);
+        $this->assertSame($foundStrpos, $foundAhoCorasickNext);
     }
 }
