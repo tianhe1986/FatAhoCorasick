@@ -25,7 +25,7 @@ use FatAhoCorasick\FatAhoCorasick;
 ```
 
 # Usage
-
+### Basic
 ```php
 $ac = new FatAhoCorasick();
 
@@ -34,7 +34,9 @@ $ac->addKeyword(['art', 'cart']);
 $ac->addKeyword('ted');
 
 //compute info
-$ac->compute();
+$ac->compute(false);  //not using next array
+
+//$ac->compute(true);  using next array
 
 //search
 $result = $ac->search('a carted mart lot one blue ted');
@@ -77,3 +79,43 @@ $result = $ac->search('a carted mart lot one blue ted');
 ```
 
 For each item in `$result`, item[0] means the keyword found, item[1] means its start location.
+
+### Separate compute and search
+Without `next` array:
+```
+$ac = new FatAhoCorasick();
+
+//add keyword, string or array
+$ac->addKeyword(['art', 'cart']);
+$ac->addKeyword('ted');
+
+//compute info
+$ac->compute(false);  //not using next array
+
+//get output, goto and failure, then you can store them
+$output = $ac->getOutput();
+$goto = $ac->getGoto();
+$failure = $ac->getFailure();
+
+$nac = new FatAhoCorasick();
+$result = $nac->searchByFailure('a carted mart lot one blue ted', $output, $goto, $failure);
+```
+
+With `next` array:
+```
+$ac = new FatAhoCorasick();
+
+//add keyword, string or array
+$ac->addKeyword(['art', 'cart']);
+$ac->addKeyword('ted');
+
+//compute info
+$ac->compute(true);  //not using next array
+
+//get output, and next, then you can store them
+$output = $ac->getOutput();
+$next = $ac->getNext();
+
+$nac = new FatAhoCorasick();
+$result = $nac->searchByNext('a carted mart lot one blue ted', $output, $next);
+```

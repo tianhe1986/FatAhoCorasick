@@ -26,6 +26,26 @@ class FatAhoCorasick
 
     }
     
+    public function getGoto()
+    {
+        return $this->goto;
+    }
+    
+    public function getOutput()
+    {
+        return $this->output;
+    }
+    
+    public function getFailure()
+    {
+        return $this->failure;
+    }
+    
+    public function getNext()
+    {
+        return $this->next;
+    }
+    
     public function addKeyword($keyword)
     {
         if (is_array($keyword)) {
@@ -122,23 +142,7 @@ class FatAhoCorasick
     
     public function searchWithoutNext($string)
     {
-        $result = [];
-        $state = 0;
-        $len = strlen($string);
-        
-        for ($i = 0; $i < $len; $i++) {
-            while($state !== 0 && ! isset($this->goto[$state][$string[$i]])) {
-                $state = $this->failure[$state] ?? 0;
-            }
-            $state = $this->goto[$state][$string[$i]] ?? 0;
-            if (isset($this->output[$state])) {
-                foreach ($this->output[$state] as $outputString) {
-                    $result[] = [$outputString, $i - strlen($outputString) + 1];
-                }
-            }
-        }
-        
-        return $result;
+        return $this->searchByFailure($string, $this->output, $this->goto, $this->failure);
     }
     
     public function search($string)
@@ -147,14 +151,40 @@ class FatAhoCorasick
             return $this->searchWithoutNext($string);
         }
         
+        return $this->searchByNext($string, $this->output, $this->next);
+    }
+    
+    public function searchByNext($string, $output, $next)
+    {
         $result = [];
         $state = 0;
         $len = strlen($string);
         
         for ($i = 0; $i < $len; $i++) {
-            $state = $this->next[$state][$string[$i]] ?? 0;
-            if (isset($this->output[$state])) {
-                foreach ($this->output[$state] as $outputString) {
+            $state = $next[$state][$string[$i]] ?? 0;
+            if (isset($output[$state])) {
+                foreach ($output[$state] as $outputString) {
+                    $result[] = [$outputString, $i - strlen($outputString) + 1];
+                }
+            }
+        }
+        
+        return $result;
+    }
+    
+    public function searchByFailure($string, $output, $goto, $failure)
+    {
+        $result = [];
+        $state = 0;
+        $len = strlen($string);
+        
+        for ($i = 0; $i < $len; $i++) {
+            while($state !== 0 && ! isset($goto[$state][$string[$i]])) {
+                $state = $failure[$state] ?? 0;
+            }
+            $state = $goto[$state][$string[$i]] ?? 0;
+            if (isset($output[$state])) {
+                foreach ($output[$state] as $outputString) {
                     $result[] = [$outputString, $i - strlen($outputString) + 1];
                 }
             }
