@@ -95,17 +95,19 @@ class FatAhoCorasick
     protected function computeFailure()
     {
         $queue = [];
+        $nowIndex = $endIndex = 0;
         foreach ($this->goto[0] as $char => $toState) {
             $this->failure[$toState] = 0;
-            $queue[] = $toState;
+            $queue[$endIndex++] = $toState;
         }
-        while ($queue) {
-            $nextState = array_shift($queue);
+        while ($nowIndex != $endIndex) {
+            $nextState = $queue[$nowIndex];
             if ( ! isset($this->goto[$nextState])) {
+                unset($queue[$nowIndex++]);
                 continue;
             }
             foreach ($this->goto[$nextState] as $char => $toState) {
-                $queue[] = $toState;
+                $queue[$endIndex++] = $toState;
                 $tempState = $this->failure[$nextState];
                 while($tempState !== 0 && ! isset($this->goto[$tempState][$char])) {
                     $tempState = $this->failure[$tempState];
@@ -118,21 +120,25 @@ class FatAhoCorasick
                     $this->output[$toState] = array_merge($this->output[$toState], $this->output[$this->failure[$toState]]);
                 }
             }
+            unset($queue[$nowIndex++]);
         }
     }
     
     protected function computeNext()
     {
         $queue = [0];
-        while ($queue) {
-            $nextState = array_shift($queue);
+        $nowIndex = 0;
+        $endIndex = 1;
+        while ($nowIndex != $endIndex) {
+            $nextState = $queue[$nowIndex];
             $failureState = $this->failure[$nextState] ?? 0;
             $this->next[$nextState] = ($this->goto[$nextState] ?? []) + ($this->next[$failureState] ?? []);
             if ( isset($this->goto[$nextState])) {
                 foreach ($this->goto[$nextState] as $toState) {
-                    $queue[] = $toState;
+                    $queue[$endIndex++] = $toState;
                 }
-            } 
+            }
+            unset($queue[$nowIndex++]);
         }
     }
     
