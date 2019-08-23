@@ -85,14 +85,10 @@ class FatAhoCorasick
         $state = 0;
         $len = strlen($keyword);
         $i = 0;
-        while (isset($this->goto[$state][$keyword[$i]])) {
-            $state = $this->goto[$state][$keyword[$i]];
-            $i++;
+        for ($i = 0; $i < $len; $i++) {
+            $state = $this->goto[$state][$keyword[$i]] ?? ($this->goto[$state][$keyword[$i]] = ++$this->maxState);
         }
-        for (; $i < $len; $i++) {
-            $this->goto[$state][$keyword[$i]] = ++$this->maxState;
-            $state = $this->maxState;
-        }
+
         $this->output[$state][] = $keyword;
     }
     
